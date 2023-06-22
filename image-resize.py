@@ -197,26 +197,42 @@ def humansize(nbytes):
     f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
     return '%s %s' % (f, suffixes[i])
 
-size = 0
+
+
+def get_change(current, previous):
+    if current == previous:
+        return 0
+    try:
+        return (abs(current - previous) / previous) * 100.0
+    except ZeroDivisionError:
+        return float('inf')
+
+
+bigsize = 0
 
 for path, dirs, files in os.walk(dirBig):
     for f in files:
         fp = os.path.join(path, f)
-        size += os.path.getsize(fp)
-print("[Folder size before:]", humansize(size))
+        bigsize += os.path.getsize(fp)
+print("[Folder size before:]", humansize(bigsize))
 
 
-size = 0
+smallsize = 0
 
 for path, dirs, files in os.walk(dirSmall):
     for f in files:
         fp = os.path.join(path, f)
-        size += os.path.getsize(fp)
+        smallsize += os.path.getsize(fp)
  
 # display size
 
-print("[Folder size after:] ", str(humansize(size)))
+print("[Folder size after:] ", str(humansize(smallsize)))
+print("New size is {0:.0%}".format(smallsize/bigsize), "of original size")
+
 print("------------------")
+
+
+
 if logOnly: sys.stdout.close()
 if (not logOnly): print("Press Enter to exit...")
 
